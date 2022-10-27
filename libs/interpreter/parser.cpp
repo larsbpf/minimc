@@ -7,60 +7,58 @@
 namespace MiniMC {
 namespace Interpreter {
 
-void Parser::command() {
+std::string Parser::command() {
   switch (lexer->token()) {
   case Token::PRINT:
-    print();
-    break;
+    return print();
   case Token::EDGES:
-    edges();
-    break;
+    return edges();
   case Token::JUMP:
-    jump();
-    break;
+    return jump();
   case Token::STEP:
-    step();
-    break;
+    return step();
   case Token::BOOKMARK:
-    bookmark();
-    break;
+    return bookmark();
   case Token::HELP:
-    help();
-    break;
+    return help();
   default:
-    nonrecognizable();
+    return nonrecognizable();
   }
 }
 
-void Parser::print() {
+std::string Parser::print() {
   std::string value = get_id();
-
+  std::stringstream ss;
   if(value == ""){
     value = "current";
   }
-  std::cout << (*statemap)[value];
+  ss << (*statemap)[value];
+  return ss.str();
 }
 
-void Parser::edges(){
+std::string Parser::edges(){
   MiniMC::CPA::AnalysisState state = statemap->get("current");
   int n = 0;
   Algorithms::EdgeEnumerator enumerator{state};
   Algorithms::EnumResult res;
 
+  std::stringstream ss;
+
   // Print outgoing edges
   if (enumerator.getNext(res)) {
     n++;
-    std::cout << n << ". " << std::endl;
-    std::cout << *res.edge;
+    ss << n << ". " << std::endl;
+    ss << *res.edge;
     while (enumerator.getNext(res)) {
       n++;
-      std::cout << n << ". " << std::endl;
-      std::cout << *res.edge;
+      ss << n << ". " << std::endl;
+      ss << *res.edge;
     }
   }
+  return ss.str();
 }
 
-void Parser::jump() {
+std::string Parser::jump() {
   std::string value = get_id();
 
   if(value == ""){
@@ -69,13 +67,16 @@ void Parser::jump() {
   if (statemap->contains(value)) {
     statemap->set("current", value);
   }
+  return "";
 }
 
 
-void Parser::step() {
+std::string Parser::step() {
   CPA::AnalysisState newstate;
   MiniMC::proc_t proc{0};
   statemap->set("prev","current");
+
+  std::stringstream ss("");
 
   if (auto edge = get_edge(get_nr())) {
     if (transfer.Transfer(statemap->get("current"), edge, proc, newstate)) {
@@ -87,28 +88,32 @@ void Parser::step() {
       };
     }
   } else {
-    std::cout << "Either does the current location have no outgoing edges "
+    ss << "Either does the current location have no outgoing edges "
                  << "or the chosen index is invalid. Show valid edges by"
                  << "entering: 'edges'" << std::endl;
   }
+  return ss.str();
 }
 
-void Parser::bookmark() {
+std::string Parser::bookmark() {
   std::string value = get_id();
 
   if(value == ""){
     value = "current";
   }
   statemap->set("bookmark",value);
+  return "";
 }
 
-void Parser::help(){
-  std::for_each(lexer->commandMap.begin(), lexer->commandMap.end(), [](auto i){std::cout << i.first << std::endl;});
+std::string Parser::help(){
+  std::stringstream ss;
+  std::for_each(lexer->commandMap.begin(), lexer->commandMap.end(), [&ss](auto i){ss << i.first << std::endl;});
+
+  return ss.str();
 }
 
-void Parser::nonrecognizable() {
-  std::cout << "The command is not recognised. Try typing 'help', inorder to "
-            << "get a list of recognised commands" << std::endl;
+std::string Parser::nonrecognizable() {
+  return "The command is not recognised. Try typing 'help', inorder to get a list of recognised commands\n";
 }
 
 std::string Parser::get_id() {

@@ -19,6 +19,9 @@ namespace MiniMC {
           os << ",";
         }
 	os <<  cfastate->getLocationState ().getLocation (i)->getInfo().getName ();
+        if(cfastate->getLocationState ().getLocation (i)->getInfo().is<MiniMC::Model::Attributes::AssertViolated>()){
+          os << "@AssertViolated";
+        }
       }
       os << "]\n";
 
