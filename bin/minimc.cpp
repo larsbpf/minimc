@@ -19,7 +19,12 @@
 
 namespace po = boost::program_options;
 
-
+void transformProgram (auto& controller, const transform_options& options) {
+  controller.createAssertViolateLocations();      
+  if (options.expand_nondet) {
+    controller.expandNonDeterministic ();
+  }
+}
 
 int main(int argc, char* argv[]) {
   
@@ -39,29 +44,25 @@ int main(int argc, char* argv[]) {
       auto loader = options.load.registrar->makeLoader  (tfac,cfac);
       MiniMC::Loaders::LoadResult loadresult = loader->loadFromFile (options.load.inputname);
       
-      
-      
       MiniMC::Model::Controller control(*loadresult.program,loadresult.entrycreator);
       control.boolCasts();
-      control.createAssertViolateLocations();
+  
       if (!control.typecheck ()) {
 	return -1;
       }
-  
-      if (options.load.tasks.size()) {
-	for (std::string& s : options.load.tasks) {
-	  try {
-	    control.addEntryPoint(s, {});
-	  } catch (MiniMC::Support::FunctionDoesNotExist&) {
-	    messager.message<MiniMC::Support::Severity::Error> (MiniMC::Support::Localiser{"Function '%1%' specicifed as entry point does not exists. "}.format(s));
-	    return -1;
+      transformProgram (control,options.transform);
+      
+      
+      for (std::string& s : options.load.tasks) {
+	try {
+	  control.addEntryPoint(s, {});
+	} catch (MiniMC::Support::FunctionDoesNotExist&) {
+	  messager.message<MiniMC::Support::Severity::Error> (MiniMC::Support::Localiser{"Function '%1%' specicifed as entry point does not exists. "}.format(s));
+	  return -1;
 	  }
-	}
-    }
-      else {
-	messager.message<MiniMC::Support::Severity::Error> ("At least one entry point must be specified");
-	return -1;
       }
+      
+      
       if (options.outputname != "") {
 	std::ofstream stream;
 	stream.open (options.outputname, std::ofstream::out);
