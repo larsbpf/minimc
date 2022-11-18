@@ -24,7 +24,7 @@ LocalOptions locoptions;
 void addOptions (po::options_description& op) {
   auto setPath = [&](std::string val) { locoptions.path = std::move(val); };
 
-  po::options_description desc("MC Options");
+  po::options_description desc("Interpreter Options");
   desc.add_options()("intp.path",
                      po::value<std::string>()->default_value("")->notifier(setPath),
                      "The indexes of the edges needed to form a path");
