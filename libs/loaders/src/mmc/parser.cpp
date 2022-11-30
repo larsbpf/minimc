@@ -464,7 +464,7 @@ Model::Instruction Parser::predicates(const std::vector<MiniMC::Model::Register_
     PREDICATES
 #undef X
     default:
-      __builtin_unreachable();
+      assert(false);
     }
   } catch (MMCParserException const& e){
     Support::Messager messager;
@@ -494,7 +494,7 @@ Model::Instruction Parser::tacops(const std::vector<MiniMC::Model::Register_ptr>
       TACOPS
 #undef X
     default:
-      __builtin_unreachable();
+      assert(false);
     }
   } catch (MMCParserException const& e){
     Support::Messager messager;
@@ -523,7 +523,7 @@ Model::Instruction Parser::comparison(const std::vector<MiniMC::Model::Register_
       COMPARISONS
 #undef X
     default:
-      __builtin_unreachable();
+      assert(false);
     }
   } catch (MMCParserException const& e){
     Support::Messager messager;
@@ -552,7 +552,7 @@ Model::Instruction Parser::castops(const std::vector<MiniMC::Model::Register_ptr
       CASTOPS
 #undef X
     default:
-      __builtin_unreachable();
+      assert(false);
     }
   } catch (MMCParserException const& e) {
     Support::Messager messager;
@@ -578,7 +578,7 @@ Model::Instruction Parser::nondet(const std::vector<MiniMC::Model::Register_ptr>
       return Model::createInstruction<Model::InstructionCode::NonDet>(
           {.res = res, .min = min, .max = max});
     }
-    __builtin_unreachable();
+    assert(false);
   } catch(MMCParserException const& e) {
     Support::Messager messager;
 
@@ -603,7 +603,7 @@ Model::Instruction Parser::extract(const std::vector<MiniMC::Model::Register_ptr
       return Model::createInstruction<Model::InstructionCode::ExtractValue>(
           {.res = res, .aggregate = aggregate, .offset = offset});
     }
-    __builtin_unreachable();
+    assert(false);
   }  catch(MMCParserException const& e) {
     Support::Messager messager;
 
@@ -634,7 +634,7 @@ Model::Instruction Parser::insert(const std::vector<MiniMC::Model::Register_ptr>
            .offset = offset,
            .insertee = insertee});
     }
-    __builtin_unreachable();
+    assert(false);
   }  catch(MMCParserException const& e) {
     Support::Messager messager;
 
@@ -657,7 +657,7 @@ Model::Instruction Parser::load(const std::vector<MiniMC::Model::Register_ptr> v
       return Model::createInstruction<Model::InstructionCode::Load>(
           {.res = res, .addr = addr});
     }
-    __builtin_unreachable();
+    assert(false);
   } catch (MMCParserException const& e){
 
     Support::Messager messager;
