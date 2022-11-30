@@ -61,7 +61,7 @@ MiniMC::Host::ExitCodes intp_main(MiniMC::Model::Controller& controller, const M
   while(true){
     std::getline(std::cin,s);
     if(!std::cin || s == "quit") break;
-    parser(s);
+    std::cout << parser(s);
   }
 
   return MiniMC::Host::ExitCodes::AllGood;
