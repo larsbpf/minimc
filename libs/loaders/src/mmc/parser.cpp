@@ -221,6 +221,7 @@ void Parser::edge(Model::Symbol name, const MiniMC::Model::RegisterDescr* regs, 
   auto source_loc = std::make_shared<MiniMC::Model::SourceInfo>();
 
   Model::Location_ptr from = location(cfg,locmap,source_loc,locinfoc);
+  (*locmap)[name.getFullName()] = from;
   lexer->advance();
   ignore_eol();
   while(lexer->token() == Token::AT_SIGN){
@@ -277,12 +278,12 @@ Model::Location_ptr Parser::location(Model::CFA* cfg,std::unordered_map<std::str
   try {
     Model::Symbol index = identifier();
     lexer->advance();
-    Model::Symbol  name = identifier();
+    Model::Symbol name = identifier();
 
     if (locmap->contains(index.getFullName())) {
       return locmap->at(index.getFullName());
     } else {
-      auto location = cfg->makeLocation(locinfoc.make(name.getFullName(), 0, *source_loc));
+      auto location = cfg->makeLocation(locinfoc.make(name.getName(), 0, *source_loc));
       if (locmap->size() == 0) {
         (*locmap)["Initial"] = location;
       }
